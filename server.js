@@ -1,14 +1,8 @@
-const http = require("http");
+const express = require("express");
+const defaultRoute = require("./routes/defaultRoute");
 
-let handler = (req, res) => {
-  if (req.url === "/") {
-    res.end("Hello World");
-  } else if (req.url === "/api") {
-    res.end("Welcome to API!");
-  } else {
-    res.writeHead(404);
-    res.end();
-  }
-};
+const app = express();
 
-http.createServer(handler).listen(8080);
+app.listen(5000, () => console.log("Server is up & running!"));
+
+app.use("/", defaultRoute);

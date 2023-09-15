@@ -1,9 +1,33 @@
 const productRepo = require("../repos/productRepo");
 
+// No of Data = pageSize
+// totalRecords -> 100 ->
+// pageSize -> 10
+// pages -> totalRecords/pageSize
+
+// totalRecords -> 105
+// pageSize -> 10
+// pages -> 11
+
 const getAll = async (req, res) => {
-  const products = await productRepo.get();
+  const page = +req.params.page || 1;
+  const search = req.query.search;
+  const pageSize = +req.params.size || 10;
+  const sort = req.query.sort || "brand";
+  const dir = req.query.dir || "asc";
+  const products = await productRepo.get(page, pageSize, sort, dir, search);
+  const totalRecords = await productRepo.getCount();
+
+  let response = {
+    metadata: {
+      totalRecords,
+      totalPages: Math.ceil(totalRecords / pageSize),
+    },
+    data: products,
+  };
+
   res.status(200);
-  res.json(products);
+  res.json(response);
 };
 
 const addProduct = async (req, res) => {

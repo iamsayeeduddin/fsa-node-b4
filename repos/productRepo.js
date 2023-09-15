@@ -1,7 +1,26 @@
 const ProductModel = require("../models/productModel");
 
-const get = () => {
-  return ProductModel.find();
+const get = (page, pageSize, sort, dir, search) => {
+  let filter = {};
+  if (search) {
+    filter = {
+      $or: [
+        { brand: { $regex: search, $options: "i" } },
+        { model: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
+        { price: { $regex: search } },
+      ],
+    };
+  }
+
+  return ProductModel.find(filter, { __v: 0 })
+    .sort({ [sort]: dir })
+    .skip((page - 1) * pageSize)
+    .limit(pageSize);
+};
+
+const getCount = () => {
+  return ProductModel.countDocuments();
 };
 
 const create = (data) => {
@@ -43,4 +62,5 @@ module.exports = {
   update,
   patch,
   deleteProduct,
+  getCount,
 };
